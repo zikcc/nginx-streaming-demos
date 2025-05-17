@@ -2,7 +2,7 @@
 
 基于 Docker 的 Nginx RTMP/FLV 流媒体服务器开发环境快速演示。适用于学习、测试和本地开发。
 
-![演示截图](docs/demo-screenshot.png) <!-- 可替换为实际截图路径 -->
+![image-20250517201341792](https://zikcc.oss-cn-beijing.aliyuncs.com/img/202505172013321.png)
 
 # 🚀 快速开始
 
@@ -11,34 +11,42 @@
 - FFmpeg（推流测试用）
 
 ### 1. 克隆仓库
-    ```bash
-    git clone https://github.com/YOUR-USERNAME/nginx-streaming-demos.git
-    cd nginx-streaming-demos
-    ```
+```
+git clone https://github.com/zikcc/nginx-streaming-demos.git
+cd nginx-streaming-demos
+```
+> 修改 push_stream.sh 中的ip地址
 ### 2.1 启动 nginx-rtmp
-    ```bash
-    cd ./nginx-rtmp
-    # 拉取镜像
-    docker pull tiangolo/nginx-rtmp:latest
-    # 启动容器（后台模式）
-    docker compose up -d
-    # ffmpeg 推流
-    ./push_stream
-    ```
-    浏览器访问 http://localhost 即可
+```bash
+cd ./nginx-rtmp
+# 拉取镜像
+docker pull tiangolo/nginx-rtmp:latest
+# 启动容器（后台模式）
+docker compose up -d
+# ffmpeg 推流
+./push_stream.sh
+```
+浏览器访问 http://localhost 即可
 ### 2.2 启动 nginx-flv
-    ```bash
-    cd ./nginx-flv
-    # 构建镜像
-    docker build -t nginx-flv .
-    # 启动容器（后台模式）
-    docker compose up -d
-    # ffmpeg 推流
-    ./push_stream
-    ```
-    浏览器访问 https://localhost 即可
-## 生产环境注意事项
-⚠️ ​​仅限开发环境使用​​
+```
+cd ./nginx-flv
+# 生成 https 自签名证书
+cd ./certs
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+        -keyout certs/key.pem \
+        -out certs/cert.pem \
+        -subj "/CN=localhost" \
+        -addext "subjectAltName=DNS:localhost,IP:YOUR_IP"
+# 构建镜像
+docker build -t nginx-flv .
+# 启动容器（后台模式）
+docker compose up -d
+# ffmpeg 推流
+./push_stream.sh
+```
+浏览器访问 https://localhost 即可
+## ⚠️ 生产环境注意事项
+​​仅限开发环境使用​​
 
 需配置 HTTPS 证书
 调整 HLS 切片参数 (hls_fragment 5s)
@@ -195,21 +203,17 @@ newgrp docker
 
 #查看所有容器
 docker ps -a
-
-
 ```
 
 如果没有此行命令，你会发现，当你每次打开新的终端
 你都必须先执行一次 “newgrp docker” 命令
 否则当前用户还是不可以执行docker命令
-
 ```
 gedit ~/.bashrc
 # 在文件最下方加入
 if ! groups | grep -q docker; then
     newgrp docker
 fi
-
 ```
 
 另外，我们需要在docker daemon 配置文件中增加国的可用的 docker hub mirror ，
@@ -718,8 +722,6 @@ rtmp {
         }
     }
 }
-
-
 ```
 
 编写 index.html
