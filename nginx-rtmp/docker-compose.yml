@@ -1,0 +1,16 @@
+services:
+  nginx-rtmp:
+    image: tiangolo/nginx-rtmp:latest
+    container_name: nginx-rtmp
+    restart: unless-stopped
+    ports:
+      - "1935:1935"  # RTMP协议端口
+      - "80:80"      # HTTP协议端口
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf     # 配置文件
+      - ./data/hls:/tmp/hls                          # HLS切片存储
+      - ./data/recordings:/tmp/recordings            # 录像文件存储
+      - ./logs:/var/log/nginx                        # 日志文件
+      - ./dist:/usr/share/nginx/html                 # 前端编译文件
+    environment:
+      - TZ=Asia/Shanghai                             # 时区设置

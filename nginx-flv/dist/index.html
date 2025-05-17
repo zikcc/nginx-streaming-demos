@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>直播监控</title>
+    <link href="/css/video-js.min.css" rel="stylesheet">
+	<style>
+        /* 容器样式 */
+        .player-container {
+            display: flex;
+            gap: 20px; /* 播放器间距 */
+            padding: 20px;
+            max-width: 1600px; /* 最大宽度限制 */
+            margin: 0 auto; /* 居中 */
+        }
+
+        /* 单个播放器包装 */
+        .player-wrapper {
+            flex: 1; /* 等分剩余空间 */
+            min-width: 300px; /* 最小宽度防止挤压 */
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* 视频元素自适应 */
+        .video-js, #videoElement {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        /* 标题样式 */
+        h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 1.2em;
+            text-align: center;
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .player-container {
+                flex-direction: column; /* 小屏幕垂直排列 */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 播放器容器 -->
+    <div class="player-container">
+        <!-- HLS 播放器 -->
+        <div class="player-wrapper">
+            <h3>HLS 直播流</h3>
+            <video id="hlsPlayer" class="video-js vjs-default-skin" controls>
+                <source src="/hls/stream.m3u8" type="application/vnd.apple.mpegurl">
+            </video>
+        </div>
+
+        <!-- FLV 播放器 -->
+        <div class="player-wrapper">
+            <h3>FLV 低延迟流</h3>
+            <video id="videoElement" controls></video>
+        </div>
+    </div>
+
+    <!-- 依赖库 -->
+    <script src="/js/video.min.js"></script>
+        <script src="/js/flv.min.js"></script>
+    <script>
+        // HLS播放器初始化
+        const hlsPlayer = videojs('hlsPlayer', {
+            autoplay: true,
+            fluid: true,
+            techOrder: ['html5']  // 强制使用HTML5模式
+        });
+        // flv播放器初始化
+        const videoElement = document.getElementById('videoElement');
+        const flvPlayer = flvjs.createPlayer({
+	    type: 'flv',
+	    url: '/live?app=live&stream=stream',
+	    isLive: true,
+	    hasAudio: false,
+	    stashInitialSize: 128,
+	    withCredentials: true  // 允许跨域带凭证
+	});
+        flvPlayer.attachMediaElement(videoElement);
+        flvPlayer.load();
+        flvPlayer.play();
+    </script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+services:
+  nginx-flv:
+    image: nginx-flv:latest
+    container_name: nginx-flv
+    restart: unless-stopped
+    ports:
+      - "1935:1935"  # RTMP协议端口
+      - "80:80"      # HTTP协议端口
+      - "443:443"
+    volumes:
+      - ./config/nginx.conf:/usr/local/nginx/conf/nginx.conf  # 修正配置文件路径
+      - ./data/hls:/tmp/hls
+      - ./data/recordings:/tmp/recordings
+      - ./logs:/var/log/nginx
+      - ./dist:/usr/share/nginx/html  # 静态文件目录
+      - ./certs:/etc/nginx/certs  # 挂载证书目录
+    environment:
+      - TZ=Asia/Shanghai
