@@ -15,7 +15,7 @@
 git clone https://github.com/zikcc/nginx-streaming-demos.git
 cd nginx-streaming-demos
 ```
-> 修改 push_stream.sh 中的ip地址
+> 修改 push_stream.sh 中的ip地址、/dev/video*、size、格式、帧率等。
 ### 2.1 启动 nginx-rtmp
 ```bash
 cd ./nginx-rtmp
